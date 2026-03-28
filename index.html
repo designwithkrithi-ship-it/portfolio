@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Krithi — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&family=Caveat:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --deep:    #1A0A2E;
+      --purple:  #2D1B5E;
+      --violet:  #4A2C8A;
+      --lav:     #C9A8F0;
+      --pink:    #E879B8;
+      --blossom: #F0A0D8;
+      --petal:   #FAD0EE;
+      --moon:    #FFF5C0;
+      --cream:   #FAF4FF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--deep);
+      color: var(--cream);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    .cursor {
+      position: fixed; width: 12px; height: 12px;
+      background: var(--blossom); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: width .2s, height .2s, background .2s;
+      mix-blend-mode: screen;
+      box-shadow: 0 0 14px var(--pink);
+    }
+    .cursor.hovered { width: 32px; height: 32px; background: var(--moon); }
+
+    /* Stars */
+    .stars { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .star {
+      position:absolute; background:white; border-radius:50%;
+      animation: twinkle var(--d,3s) ease-in-out infinite;
+      animation-delay: var(--delay,0s);
+    }
+    @keyframes twinkle { 0%,100%{opacity:.1} 50%{opacity:var(--peak,.8)} }
+
+    /* NAV */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:200;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:22px 64px;
+      background:linear-gradient(to bottom,rgba(26,10,46,.95) 0%,transparent 100%);
+    }
+    .nav-logo {
+      font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:700;
+      letter-spacing:.04em; color:var(--lav); text-decoration:none;
+    }
+    .nav-logo span { color:var(--blossom); font-style:italic; }
+    .nav-links { display:flex; gap:40px; list-style:none; }
+    .nav-links a {
+      font-size:.83rem; letter-spacing:.12em; text-transform:uppercase;
+      color:rgba(201,168,240,.7); text-decoration:none; transition:color .3s;
+    }
+    .nav-links a:hover { color:var(--blossom); }
+
+    section { position:relative; overflow:hidden; }
+    .section-inner { max-width:1120px; margin:0 auto; position:relative; z-index:5; }
+
+    .section-label {
+      display:inline-flex; align-items:center; gap:10px;
+      font-size:.72rem; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(201,168,240,.55); margin-bottom:14px;
+    }
+    .section-label::before, .section-label::after {
+      content:'✦'; font-size:.5rem; color:var(--blossom); opacity:.7;
+    }
+    .section-title {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2.4rem,5.5vw,3.8rem); font-weight:800; line-height:1.1; color:var(--cream);
+    }
+    .section-title em { font-style:italic; color:var(--lav); }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height:100vh; padding:120px 64px 80px;
+      background:radial-gradient(ellipse 70% 70% at 50% 0%, #3B1F7A 0%, var(--deep) 70%);
+      display:flex; align-items:center;
+    }
+    .moon {
+      position:absolute; top:40px; left:50%; transform:translateX(-50%);
+      width:160px; height:160px;
+      background:radial-gradient(circle at 38% 38%,#FFFDE0,#FDEEA0 55%,#E8CC60);
+      border-radius:50%;
+      box-shadow:0 0 60px 30px rgba(253,238,160,.35),0 0 120px 60px rgba(253,238,160,.15),0 0 200px 100px rgba(180,130,240,.08);
+      z-index:2; animation:moonPulse 6s ease-in-out infinite;
+    }
+    @keyframes moonPulse {
+      0%,100%{box-shadow:0 0 60px 30px rgba(253,238,160,.35),0 0 120px 60px rgba(253,238,160,.15)}
+      50%{box-shadow:0 0 80px 40px rgba(253,238,160,.45),0 0 160px 80px rgba(253,238,160,.22)}
+    }
+    .moon-beam {
+      position:absolute; top:120px; left:50%; transform:translateX(-50%);
+      width:3px; height:55%;
+      background:linear-gradient(to bottom,rgba(253,238,160,.25),transparent);
+      z-index:1; pointer-events:none;
+    }
+
+    /* Cloud layer */
+    .cloud-layer { position:absolute; bottom:0; left:0; right:0; height:55%; pointer-events:none; z-index:1; }
+
+    /* Trees */
+    .tree-left, .tree-right {
+      position:absolute; top:0; bottom:0; width:36%; pointer-events:none; z-index:3;
+    }
+    .tree-left  { left:-2%; }
+    .tree-right { right:-2%; transform:scaleX(-1); }
+
+    /* Hero content */
+    .hero-inner {
+      display:flex; align-items:center; justify-content:center;
+      width:100%; max-width:860px; margin:0 auto; position:relative; z-index:10;
+    }
+    .hero-text { flex:1; text-align:center; }
+    .hero-greeting {
+      font-family:'Caveat',cursive; font-size:1.3rem; color:var(--blossom);
+      letter-spacing:.06em; margin-bottom:16px;
+      opacity:0; animation:fadeUp .6s .1s forwards;
+    }
+    .hero-name {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(3.8rem,8vw,7rem); font-weight:900; line-height:1.0; color:var(--cream);
+      margin-bottom:20px; opacity:0; animation:fadeUp .7s .2s forwards;
+    }
+    .hero-name em { font-style:italic; color:var(--lav); }
+    .hero-role {
+      font-family:'Caveat',cursive; font-size:1.6rem; color:var(--blossom);
+      margin-bottom:22px; opacity:0; animation:fadeUp .7s .3s forwards;
+    }
+    .hero-desc {
+      font-size:1.05rem; line-height:1.85; color:rgba(250,244,255,.65);
+      max-width:520px; margin:0 auto;
+      opacity:0; animation:fadeUp .7s .4s forwards;
+    }
+    .hero-btn {
+      display:inline-flex; align-items:center; gap:10px;
+      margin-top:36px; padding:13px 32px;
+      border:1px solid rgba(201,168,240,.5); border-radius:50px; color:var(--lav);
+      text-decoration:none; font-size:.92rem;
+      background:rgba(74,44,138,.3); backdrop-filter:blur(8px);
+      transition:background .3s, border-color .3s, transform .2s;
+      opacity:0; animation:fadeUp .7s .5s forwards;
+    }
+    .hero-btn:hover { background:rgba(201,168,240,.18); border-color:var(--blossom); transform:translateY(-3px); }
+    @keyframes fadeUp  { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+
+    /* ─── ABOUT ─── */
+    #about {
+      padding:110px 64px;
+      background:linear-gradient(175deg,var(--deep) 0%,#2B1560 50%,var(--deep) 100%);
+    }
+    .about-grid { display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;margin-top:52px; }
+    .about-text p { font-size:1.03rem;line-height:1.95;color:rgba(250,244,255,.68);margin-bottom:20px; }
+    .about-text p strong { color:var(--lav);font-weight:500; }
+    .chips { display:flex;flex-wrap:wrap;gap:10px;margin-top:28px; }
+    .chip { padding:7px 18px;border-radius:30px;font-size:.8rem;font-weight:400;letter-spacing:.04em;border:1px solid; }
+    .chip-pink { color:var(--blossom);border-color:rgba(240,160,216,.5);background:rgba(240,160,216,.08); }
+    .chip-lav  { color:var(--lav);border-color:rgba(201,168,240,.5);background:rgba(201,168,240,.08); }
+    .chip-moon { color:var(--moon);border-color:rgba(255,245,192,.5);background:rgba(255,245,192,.08); }
+    .about-stats { display:flex;flex-direction:column;gap:20px; }
+    .stat-card {
+      background:rgba(74,44,138,.22);border:1px solid rgba(201,168,240,.18);
+      backdrop-filter:blur(8px);border-radius:20px;padding:28px 32px;
+      transition:transform .3s,border-color .3s,background .3s;
+    }
+    .stat-card:hover { transform:translateX(8px);border-color:rgba(240,160,216,.4);background:rgba(74,44,138,.35); }
+    .stat-num { font-family:'Playfair Display',serif;font-size:3.2rem;font-weight:800;line-height:1;margin-bottom:8px; }
+    .stat-desc { font-size:.88rem;color:rgba(250,244,255,.5); }
+
+    /* ─── PHILOSOPHY ─── */
+    #philosophy { padding:110px 64px;background:linear-gradient(180deg,var(--deep) 0%,#1E0F42 100%); }
+    .philosophy-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:52px; }
+    .phil-card {
+      background:rgba(255,255,255,.03);border:1px solid rgba(201,168,240,.18);
+      border-radius:28px;padding:40px 30px;position:relative;overflow:hidden;
+      transition:transform .35s,box-shadow .35s,border-color .35s;
+    }
+    .phil-card:hover { transform:translateY(-8px);box-shadow:0 20px 60px rgba(138,80,200,.3);border-color:rgba(240,160,216,.4); }
+    .phil-card::before { content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:2px 2px 0 0; }
+    .phil-card:nth-child(1)::before { background:linear-gradient(90deg,var(--pink),var(--blossom)); }
+    .phil-card:nth-child(2)::before { background:linear-gradient(90deg,var(--lav),var(--pink)); }
+    .phil-card:nth-child(3)::before { background:linear-gradient(90deg,var(--moon),var(--lav)); }
+    .phil-glow {
+      position:absolute;top:-40px;right:-40px;width:120px;height:120px;
+      border-radius:50%;filter:blur(40px);opacity:.15;pointer-events:none;
+    }
+    .phil-card:nth-child(1) .phil-glow{background:var(--pink)}
+    .phil-card:nth-child(2) .phil-glow{background:var(--lav)}
+    .phil-card:nth-child(3) .phil-glow{background:var(--moon)}
+    .phil-icon { font-size:2rem;margin-bottom:22px;display:block; }
+    .phil-title { font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;margin-bottom:14px;color:var(--cream); }
+    .phil-desc { font-size:.9rem;line-height:1.8;color:rgba(250,244,255,.58); }
+
+    /* ─── PROJECTS ─── */
+    #projects { padding:110px 64px;background:linear-gradient(180deg,#1E0F42 0%,var(--deep) 50%,#21104A 100%); }
+    .projects-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:52px; }
+    .project-card {
+      background:rgba(255,255,255,.03);border:1px solid rgba(201,168,240,.18);
+      border-radius:28px;padding:40px;text-decoration:none;color:inherit;display:block;
+      position:relative;overflow:hidden;transition:transform .35s,box-shadow .35s,border-color .35s;
+    }
+    .project-card:hover { transform:translate(-4px,-6px);box-shadow:8px 8px 50px rgba(138,80,200,.35);border-color:rgba(240,160,216,.4); }
+    .project-arrow {
+      position:absolute;top:28px;right:28px;width:36px;height:36px;
+      background:rgba(201,168,240,.1);border:1px solid rgba(201,168,240,.25);
+      border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-size:.9rem;color:var(--lav);
+      opacity:0;transform:scale(.7);transition:opacity .25s,transform .25s;
+    }
+    .project-card:hover .project-arrow { opacity:1;transform:scale(1); }
+    .project-card-glow {
+      position:absolute;bottom:-30px;right:-30px;width:140px;height:140px;
+      border-radius:50%;filter:blur(50px);opacity:0;pointer-events:none;transition:opacity .35s;
+    }
+    .project-card:hover .project-card-glow { opacity:.2; }
+    .project-card:nth-child(1) .project-card-glow{background:var(--pink)}
+    .project-card:nth-child(2) .project-card-glow{background:var(--lav)}
+    .project-card:nth-child(3) .project-card-glow{background:var(--moon)}
+    .project-card:nth-child(4) .project-card-glow{background:var(--blossom)}
+    .project-tag {
+      display:inline-block;font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+      padding:5px 14px;border-radius:20px;margin-bottom:20px;border:1px solid;
+    }
+    .tag-fig  { color:var(--lav);border-color:rgba(201,168,240,.4);background:rgba(201,168,240,.1); }
+    .tag-ux   { color:var(--blossom);border-color:rgba(240,160,216,.4);background:rgba(240,160,216,.1); }
+    .tag-moon { color:var(--moon);border-color:rgba(255,245,192,.4);background:rgba(255,245,192,.1); }
+    .tag-res  { color:var(--pink);border-color:rgba(232,121,184,.4);background:rgba(232,121,184,.1); }
+    .project-title { font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;line-height:1.3;margin-bottom:14px;color:var(--cream); }
+    .project-desc { font-size:.88rem;line-height:1.75;color:rgba(250,244,255,.55); }
+    .project-bar { height:3px;border-radius:2px;margin-top:28px; }
+
+    /* ─── CONTACT ─── */
+    #contact {
+      padding:130px 64px 100px;
+      background:radial-gradient(ellipse 80% 80% at 50% 100%,#3B1F7A 0%,var(--deep) 65%);
+      text-align:center;
+    }
+    .contact-inner { max-width:600px;margin:0 auto;position:relative;z-index:5; }
+    .contact-desc { font-size:1rem;line-height:1.9;color:rgba(250,244,255,.62);margin:20px 0 44px; }
+    .contact-links { display:flex;gap:16px;justify-content:center;flex-wrap:wrap; }
+    .contact-btn {
+      display:inline-flex;align-items:center;gap:8px;padding:13px 30px;border-radius:50px;
+      font-size:.9rem;text-decoration:none;border:1px solid;letter-spacing:.04em;
+      transition:transform .2s,box-shadow .2s,background .2s;
+    }
+    .contact-btn-primary { background:rgba(201,168,240,.18);border-color:rgba(201,168,240,.5);color:var(--lav); }
+    .contact-btn-primary:hover { background:rgba(201,168,240,.3);box-shadow:0 0 30px rgba(201,168,240,.25);transform:translateY(-3px); }
+    .contact-btn-secondary { background:transparent;border-color:rgba(240,160,216,.35);color:var(--blossom); }
+    .contact-btn-secondary:hover { background:rgba(240,160,216,.1);box-shadow:0 0 30px rgba(240,160,216,.2);transform:translateY(-3px); }
+    .contact-note { margin-top:52px;font-family:'Caveat',cursive;font-size:1.1rem;color:rgba(201,168,240,.45); }
+
+    /* Falling petals */
+    .falling-petal {
+      position:fixed;font-size:1rem;pointer-events:none;z-index:50;opacity:0;
+      animation:fallDown var(--fd,8s) linear var(--fdelay,0s) infinite;
+    }
+    @keyframes fallDown {
+      0%{opacity:0;transform:translateY(-20px) rotate(0deg)}
+      10%{opacity:.8}
+      90%{opacity:.5}
+      100%{opacity:0;transform:translateY(110vh) rotate(720deg) translateX(var(--fx,40px))}
+    }
+
+    /* Scroll reveal */
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .r1{transition-delay:.1s}.r2{transition-delay:.2s}.r3{transition-delay:.3s}.r4{transition-delay:.4s}
+
+    footer {
+      background:var(--deep);border-top:1px solid rgba(201,168,240,.1);
+      text-align:center;padding:28px 60px;font-size:.82rem;color:rgba(201,168,240,.35);
+    }
+    footer span { color:var(--blossom); }
+
+    @media(max-width:768px){
+      nav{padding:16px 24px}
+      #hero{padding:100px 24px 72px}
+      .hero-inner{flex-direction:column-reverse;gap:32px}
+      .hero-photo-orb{width:220px;height:260px}
+      section{padding:80px 24px!important}
+      .about-grid,.projects-grid,.philosophy-grid{grid-template-columns:1fr}
+      .nav-links{display:none}
+      .moon{width:110px;height:110px}
+    }
+  </style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div id="petals"></div>
+<div class="cursor" id="cursor"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">k<span>rithi</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#philosophy">Philosophy</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="moon"></div>
+  <div class="moon-beam"></div>
+
+  <!-- Left tree -->
+  <svg class="tree-left" viewBox="0 0 380 900" xmlns="http://www.w3.org/2000/svg">
+    <path d="M65,900 C72,700 52,550 82,400 C97,320 122,240 142,180 C157,135 167,90 162,40" stroke="#3D2010" stroke-width="18" fill="none" stroke-linecap="round"/>
+    <path d="M82,400 C42,360 -8,320 -28,260" stroke="#3D2010" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M102,320 C142,280 182,240 222,200" stroke="#3D2010" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <path d="M122,250 C82,200 42,160 22,100" stroke="#3D2010" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M142,180 C182,140 232,100 262,50" stroke="#3D2010" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M102,320 C62,290 22,280 -18,270" stroke="#3D2010" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M222,200 C252,170 272,140 302,110" stroke="#3D2010" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M262,50 C292,30 312,20 342,10"  stroke="#3D2010" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- blossoms -->
+    <circle cx="-26" cy="255" r="28" fill="#E070B8" opacity=".55"/>
+    <circle cx="0"   cy="235" r="22" fill="#F0A0D8" opacity=".65"/>
+    <circle cx="26"  cy="250" r="20" fill="#FAD0EE" opacity=".5"/>
+    <circle cx="-10" cy="215" r="18" fill="#E890CC" opacity=".6"/>
+    <circle cx="216" cy="196" r="30" fill="#D860A8" opacity=".55"/>
+    <circle cx="246" cy="178" r="24" fill="#F0A0D8" opacity=".7"/>
+    <circle cx="272" cy="196" r="22" fill="#FAD0EE" opacity=".55"/>
+    <circle cx="228" cy="160" r="18" fill="#E878C0" opacity=".6"/>
+    <circle cx="256" cy="158" r="16" fill="#FAD0EE" opacity=".5"/>
+    <circle cx="20"  cy="96"  r="26" fill="#D860A8" opacity=".5"/>
+    <circle cx="46"  cy="78"  r="22" fill="#F0A0D8" opacity=".65"/>
+    <circle cx="30"  cy="60"  r="18" fill="#FAD0EE" opacity=".55"/>
+    <circle cx="256" cy="44"  r="28" fill="#E070B8" opacity=".55"/>
+    <circle cx="284" cy="26"  r="22" fill="#F0A0D8" opacity=".65"/>
+    <circle cx="312" cy="12"  r="18" fill="#FAD0EE" opacity=".5"/>
+    <circle cx="342" cy="6"   r="16" fill="#E878C0" opacity=".55"/>
+    <circle cx="-22" cy="320" r="26" fill="#E070B8" opacity=".45"/>
+    <circle cx="6"   cy="304" r="20" fill="#F0A0D8" opacity=".55"/>
+    <circle cx="60"  cy="290" r="18" fill="#FAD0EE" opacity=".45"/>
+  </svg>
+
+  <!-- Right tree (mirror) -->
+  <svg class="tree-right" viewBox="0 0 380 900" xmlns="http://www.w3.org/2000/svg">
+    <path d="M65,900 C72,700 52,550 82,400 C97,320 122,240 142,180 C157,135 167,90 162,40" stroke="#3D2010" stroke-width="18" fill="none" stroke-linecap="round"/>
+    <path d="M82,400 C42,360 -8,320 -28,260" stroke="#3D2010" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M102,320 C142,280 182,240 222,200" stroke="#3D2010" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <path d="M122,250 C82,200 42,160 22,100" stroke="#3D2010" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M142,180 C182,140 232,100 262,50" stroke="#3D2010" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M102,320 C62,290 22,280 -18,270" stroke="#3D2010" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M222,200 C252,170 272,140 302,110" stroke="#3D2010" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M262,50 C292,30 312,20 342,10"  stroke="#3D2010" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <circle cx="-26" cy="255" r="28" fill="#E070B8" opacity=".55"/>
+    <circle cx="0"   cy="235" r="22" fill="#F0A0D8" opacity=".65"/>
+    <circle cx="26"  cy="250" r="20" fill="#FAD0EE" opacity=".5"/>
+    <circle cx="-10" cy="215" r="18" fill="#E890CC" opacity=".6"/>
+    <circle cx="216" cy="196" r="30" fill="#D860A8" opacity=".55"/>
+    <circle cx="246" cy="178" r="24" fill="#F0A0D8" opacity=".7"/>
+    <circle cx="272" cy="196" r="22" fill="#FAD0EE" opacity=".55"/>
+    <circle cx="228" cy="160" r="18" fill="#E878C0" opacity=".6"/>
+    <circle cx="20"  cy="96"  r="26" fill="#D860A8" opacity=".5"/>
+    <circle cx="46"  cy="78"  r="22" fill="#F0A0D8" opacity=".65"/>
+    <circle cx="30"  cy="60"  r="18" fill="#FAD0EE" opacity=".55"/>
+    <circle cx="256" cy="44"  r="28" fill="#E070B8" opacity=".55"/>
+    <circle cx="284" cy="26"  r="22" fill="#F0A0D8" opacity=".65"/>
+    <circle cx="312" cy="12"  r="18" fill="#FAD0EE" opacity=".5"/>
+    <circle cx="-22" cy="320" r="26" fill="#E070B8" opacity=".45"/>
+    <circle cx="6"   cy="304" r="20" fill="#F0A0D8" opacity=".55"/>
+  </svg>
+
+  <div class="hero-inner">
+    <div class="hero-text">
+      <p class="hero-greeting">✦ &nbsp; welcome to my space</p>
+      <h1 class="hero-name">Hi, I'm <em>Krithi</em></h1>
+      <p class="hero-role">UX Designer &amp; Researcher 🌸</p>
+      <p class="hero-desc">Crafting purposeful digital experiences where deep research meets thoughtful design. I make complex things feel quietly magical.</p>
+      <a href="#projects" class="hero-btn">Explore my work &nbsp;→</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ABOUT ══ -->
+<section id="about">
+  <svg style="position:absolute;top:-1px;left:0;right:0;width:100%;pointer-events:none;z-index:2" viewBox="0 0 1440 60" preserveAspectRatio="none">
+    <path d="M0,30 Q360,0 720,30 Q1080,60 1440,30 L1440,0 L0,0Z" fill="#1A0A2E" opacity=".95"/>
+  </svg>
+  <div class="section-inner" style="padding-top:16px">
+    <p class="section-label reveal">About me</p>
+    <h2 class="section-title reveal r1">A little bit<br/><em>about me</em></h2>
+    <div class="about-grid">
+      <div class="about-text reveal r2">
+        <p>I'm a <strong>UX Designer and Researcher</strong> who believes the best products feel almost invisible — they just work, and leave you smiling.</p>
+        <p>My work lives at the intersection of <strong>empathy and craft</strong>. I dig deep into research, untangle messy problems, and design solutions that feel surprisingly obvious in hindsight.</p>
+        <p>When not designing, I'm probably <strong>sketching random ideas</strong>, hunting great coffee, or getting lost in a Figma prototype at 2 am.</p>
+        <div class="chips">
+          <span class="chip chip-pink">UX Research</span>
+          <span class="chip chip-lav">Product Design</span>
+          <span class="chip chip-moon">Interaction Design</span>
+          <span class="chip chip-pink">Design Systems</span>
+          <span class="chip chip-lav">Figma</span>
+          <span class="chip chip-moon">Prototyping</span>
+        </div>
+      </div>
+      <div class="about-stats reveal r3">
+        <div class="stat-card">
+          <div class="stat-num" style="color:var(--blossom)">4+</div>
+          <div class="stat-desc">Years designing digital products end to end</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:var(--lav)">45+</div>
+          <div class="stat-desc">Product apps unified under one design system</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:var(--moon)">∞</div>
+          <div class="stat-desc">Curiosity about why people do what they do</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PHILOSOPHY ══ -->
+<section id="philosophy">
+  <svg style="position:absolute;top:24px;right:36px;width:200px;pointer-events:none;opacity:.3;z-index:1" viewBox="0 0 200 140">
+    <circle cx="40" cy="70" r="22" fill="#E070B8"/>
+    <circle cx="75" cy="48" r="18" fill="#F0A0D8"/>
+    <circle cx="110" cy="68" r="24" fill="#D860A8"/>
+    <circle cx="150" cy="44" r="20" fill="#FAD0EE"/>
+    <circle cx="188" cy="65" r="18" fill="#E890CC"/>
+  </svg>
+  <div class="section-inner">
+    <p class="section-label reveal">How I think</p>
+    <h2 class="section-title reveal r1">My design<br/><em>philosophy</em></h2>
+    <div class="philosophy-grid">
+      <div class="phil-card reveal r1">
+        <div class="phil-glow"></div>
+        <span class="phil-icon">🔍</span>
+        <h3 class="phil-title">Curiosity first</h3>
+        <p class="phil-desc">Every great design starts with a dumb question. I resist jumping to solutions before truly understanding the problem — even when the deadline screams otherwise.</p>
+      </div>
+      <div class="phil-card reveal r2">
+        <div class="phil-glow"></div>
+        <span class="phil-icon">🪄</span>
+        <h3 class="phil-title">Simple ≠ easy</h3>
+        <p class="phil-desc">The simplest interface is the hardest to design. I chase clarity obsessively — removing friction, trimming noise, making the complex feel effortless.</p>
+      </div>
+      <div class="phil-card reveal r3">
+        <div class="phil-glow"></div>
+        <span class="phil-icon">💬</span>
+        <h3 class="phil-title">Empathy is the method</h3>
+        <p class="phil-desc">Numbers tell me what. People tell me why. Real research, real users, real conversations — that's where the real insights hide.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PROJECTS ══ -->
+<section id="projects">
+  <svg style="position:absolute;top:24px;left:28px;width:200px;pointer-events:none;opacity:.22;z-index:1" viewBox="0 0 200 140">
+    <circle cx="30"  cy="68" r="20" fill="#FAD0EE"/>
+    <circle cx="66"  cy="44" r="16" fill="#F0A0D8"/>
+    <circle cx="102" cy="64" r="22" fill="#E070B8"/>
+    <circle cx="140" cy="40" r="18" fill="#FAD0EE"/>
+    <circle cx="172" cy="60" r="16" fill="#F0A0D8"/>
+  </svg>
+  <div class="section-inner">
+    <p class="section-label reveal">Selected work</p>
+    <h2 class="section-title reveal r1">Projects I'm<br/><em>proud of</em></h2>
+    <div class="projects-grid">
+      <a href="https://www.figma.com/proto/WUE9UBlgN065aPa0XsPSCj/Portfolio-2024?node-id=10-2041&t=gTPF0xWsDfj2GXiG-1&scaling=contain&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=10%3A2041"
+         target="_blank" rel="noopener noreferrer" class="project-card reveal r1">
+        <div class="project-card-glow"></div>
+        <div class="project-arrow">↗</div>
+        <span class="project-tag tag-fig">Figma Prototype</span>
+        <h3 class="project-title">Handsfree Onboarding</h3>
+        <p class="project-desc">Rethinking the onboarding experience to remove barriers — letting users hit the ground running without handholding.</p>
+        <div class="project-bar" style="background:linear-gradient(90deg,var(--lav),var(--blossom))"></div>
+      </a>
+      <a href="https://jstrieb.github.io/link-lock/#eyJ2IjoiMC4wLjEiLCJlIjoib3JJbk1ZZ3pnZVRsV0d3ODdnMU9wdWx1SVRZaGdlQzBJZmM3NlpJcDN3aEpYSll1UGRheVJubSsyOFlOM3lUOGRtcEU1bGY1bkdObXBaQW9yYUhUVElibUg4Y2JDQUJ3Y1FRekJhSWZKOHpuQTZCMmQ3MmpzcG5CUXVJRHM1OXJ1ZGNrbkZLdXRwTGVyczU2L0VRakR4QjZPWVAycjhGTFNpdHR1UElWMEpVNC8wdG9GcG0zcW1VUXM3NEIvUDRuK2RSelV3a25lT3lhSzVvNXRHYk4rckV5U0xJWEN1RTdKNlh3MitmQkJkRDRkVHJreU9paWVlM081QS9qbGp0RE1hVzNpN2dpNG02VFdSNHM4aXp4NG1SWm9YaVUvWUJxbHVqeWpINUtrZ0p4MnRtT1UrTEpkaWtQWnhCOEZ2RXc2ZDBrL1NLaG52eVNsallsVGc9PSIsImgiOiJOREEgLSBQYXNzd29yZCBwcm90ZWN0ZWQiLCJzIjoiU2xxVFRJdVJ2Ni8zSTNnaEtibm5lUT09IiwiaSI6ImFFa215OFRmWEl0aFlhL3gifQ=="
+         target="_blank" rel="noopener noreferrer" class="project-card reveal r2">
+        <div class="project-card-glow"></div>
+        <div class="project-arrow">↗</div>
+        <span class="project-tag tag-ux">UX Design</span>
+        <h3 class="project-title">Unified Left Navigation for 45+ Apps</h3>
+        <p class="project-desc">Designing one coherent navigation system spanning an entire product ecosystem — harmonising 45+ apps without losing identity.</p>
+        <div class="project-bar" style="background:linear-gradient(90deg,var(--blossom),var(--lav))"></div>
+      </a>
+      <a href="https://jstrieb.github.io/link-lock/#eyJ2IjoiMC4wLjEiLCJlIjoiYlZSZGs2Z0dCSTJpWUlpanBidlBIU0UwdTRISEJEVWZLVUc1c0NaWEJsTHlMNk1naGtFRS9UTzMvU1lnQ0FLWEpZV3pXV3oveVJhMEFnejE3QnB2SlFRa1ZzS3E3U1BTQkgrSUg5WEk0cmpMWHJVMVZFeURGZzQ4dmQ1RHBwU2UwSEpuTkdYd0JVd3QvTlB0bWtNUXJJSmNpamZDIiwicyI6IjlKZklxUGQ5NmE4aUZ3ZHJMSzNSd2c9PSIsImkiOiI2MGNtclhnSThleWd4TFNYIn0="
+         target="_blank" rel="noopener noreferrer" class="project-card reveal r3">
+        <div class="project-card-glow"></div>
+        <div class="project-arrow">↗</div>
+        <span class="project-tag tag-moon">Product Design</span>
+        <h3 class="project-title">Dynamic License Management</h3>
+        <p class="project-desc">Untangling the complexity of software licensing into a fluid, intuitive management experience for admins and users alike.</p>
+        <div class="project-bar" style="background:linear-gradient(90deg,var(--moon),var(--lav))"></div>
+      </a>
+      <a href="https://bold-rubidium-1e9.notion.site/Improving-lead-quality-using-User-Research-30ecbb6b303980a280afcf3b23bfe909?source=copy_link"
+         target="_blank" rel="noopener noreferrer" class="project-card reveal r4">
+        <div class="project-card-glow"></div>
+        <div class="project-arrow">↗</div>
+        <span class="project-tag tag-res">User Research</span>
+        <h3 class="project-title">Improving Lead Quality Using User Research</h3>
+        <p class="project-desc">A deep-dive research initiative uncovering what truly drives lead quality — translating qualitative insights into measurable product improvements.</p>
+        <div class="project-bar" style="background:linear-gradient(90deg,var(--pink),var(--blossom))"></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ══ -->
+<section id="contact">
+  <!-- Corner trees -->
+  <svg style="position:absolute;bottom:0;left:0;width:26%;pointer-events:none;opacity:.3;z-index:1" viewBox="0 0 280 380" preserveAspectRatio="xMinYMax meet">
+    <path d="M50,380 C55,280 45,185 66,110 C78,65 95,28 100,0" stroke="#3D2010" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M66,110 C38,85 12,68 -10,38" stroke="#3D2010" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M80,195 C112,165 142,136 172,108" stroke="#3D2010" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <circle cx="-8"  cy="35" r="22" fill="#E070B8" opacity=".6"/>
+    <circle cx="16"  cy="18" r="18" fill="#F0A0D8" opacity=".65"/>
+    <circle cx="168" cy="104" r="24" fill="#D860A8" opacity=".55"/>
+    <circle cx="196" cy="86"  r="20" fill="#F0A0D8" opacity=".65"/>
+    <circle cx="222" cy="100" r="16" fill="#FAD0EE" opacity=".5"/>
+  </svg>
+  <svg style="position:absolute;bottom:0;right:0;width:26%;pointer-events:none;opacity:.3;z-index:1;transform:scaleX(-1)" viewBox="0 0 280 380" preserveAspectRatio="xMinYMax meet">
+    <path d="M50,380 C55,280 45,185 66,110 C78,65 95,28 100,0" stroke="#3D2010" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M66,110 C38,85 12,68 -10,38" stroke="#3D2010" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M80,195 C112,165 142,136 172,108" stroke="#3D2010" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <circle cx="-8"  cy="35" r="22" fill="#E070B8" opacity=".6"/>
+    <circle cx="16"  cy="18" r="18" fill="#F0A0D8" opacity=".65"/>
+    <circle cx="168" cy="104" r="24" fill="#D860A8" opacity=".55"/>
+    <circle cx="196" cy="86"  r="20" fill="#F0A0D8" opacity=".65"/>
+  </svg>
+
+  <div class="section-inner contact-inner">
+    <p class="section-label reveal" style="justify-content:center">Let's connect</p>
+    <h2 class="section-title reveal r1">Say <em>hello</em> 🌸</h2>
+    <p class="contact-desc reveal r2">Whether you want to collaborate on something meaningful, chat about design, or just share something interesting — my inbox is always open.</p>
+    <div class="contact-links reveal r3">
+      <a href="mailto:designwithkrithi@gmail.com" class="contact-btn contact-btn-primary">✉️ &nbsp;Drop me a mail</a>
+      <a href="https://www.linkedin.com/in/krithi-ux/" target="_blank" rel="noopener" class="contact-btn contact-btn-secondary">LinkedIn →</a>
+    </div>
+    <p class="contact-note reveal r4">✦ &nbsp; I usually reply within 24 hours (unless I'm deep in a Figma rabbit hole) &nbsp; ✦</p>
+  </div>
+</section>
+
+<footer>Designed with 🌸 by <span>Krithi</span> &nbsp;·&nbsp; 2025</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top  = e.clientY + 'px';
+  });
+  document.querySelectorAll('a,button,.project-card,.phil-card,.stat-card').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+  });
+
+  // Stars
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 130; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = Math.random() * 2.2 + 0.5;
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--d:${(Math.random()*4+2).toFixed(1)}s;--delay:${-(Math.random()*6).toFixed(1)}s;--peak:${(Math.random()*.7+.3).toFixed(1)}`;
+    starsEl.appendChild(s);
+  }
+
+  // Falling petals
+  const petalsEl = document.getElementById('petals');
+  ['🌸','✿','🌷','❀','✾'].forEach((emoji, i) => {
+    for (let j = 0; j < 3; j++) {
+      const p = document.createElement('div');
+      p.className = 'falling-petal';
+      p.textContent = emoji;
+      const xOff = (Math.random()-.5)*120;
+      p.style.cssText = `left:${Math.random()*100}%;--fd:${(Math.random()*8+6).toFixed(1)}s;--fdelay:${-(Math.random()*12).toFixed(1)}s;--fx:${xOff.toFixed(0)}px`;
+      petalsEl.appendChild(p);
+    }
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
